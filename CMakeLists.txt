@@ -15,6 +15,7 @@ add_subdirectory(fatpup)
 
 add_executable(fatpup-ui fatpup-ui.cpp umax4_8.c)
 target_include_directories(fatpup-ui PRIVATE ${FATPUP_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS})
+string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(fatpup-ui ${FATPUP_LIBRARIES} ${SDL2_LIBRARIES})
 add_custom_command(TARGET fatpup-ui POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
