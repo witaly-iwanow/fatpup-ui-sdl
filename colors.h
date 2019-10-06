@@ -1,20 +1,20 @@
 #ifndef FATPUP_UI_COLORS_H
 #define FATPUP_UI_COLORS_H
 
-static constexpr uint8_t LIGHT_SQUARE_R = 255;
-static constexpr uint8_t LIGHT_SQUARE_G = 219;
-static constexpr uint8_t LIGHT_SQUARE_B = 153;
+// RGBA
+static constexpr uint8_t LIGHT_SQUARE[] = { 255, 219, 153, 255 };
 
-static constexpr uint8_t DARK_SQUARE_R = 145;
-static constexpr uint8_t DARK_SQUARE_G = 94;
-static constexpr uint8_t DARK_SQUARE_B = 55;
+static constexpr uint8_t DARK_SQUARE[] = { 145, 94, 55, 255 };
 
-static constexpr uint8_t SELECTED_SQUARE_R = 255;
-static constexpr uint8_t SELECTED_SQUARE_G = 81;
-static constexpr uint8_t SELECTED_SQUARE_B = 0;
+static constexpr uint8_t SELECTED_SQUARE[] = { 255, 81, 0, 255 };
+static constexpr uint8_t LAST_MOVE_SQUARE[] = { SELECTED_SQUARE[0], SELECTED_SQUARE[1], SELECTED_SQUARE[2], 130 };
 
-static constexpr uint8_t MOVE_PANEL_R = (LIGHT_SQUARE_R + DARK_SQUARE_R) / 2;
-static constexpr uint8_t MOVE_PANEL_G = (LIGHT_SQUARE_G + DARK_SQUARE_G) / 2;
-static constexpr uint8_t MOVE_PANEL_B = (LIGHT_SQUARE_B + DARK_SQUARE_B) / 2;
+static constexpr uint8_t MOVE_PANEL[] =
+{
+    (LIGHT_SQUARE[0] + DARK_SQUARE[0]) / 2,
+    (LIGHT_SQUARE[1] + DARK_SQUARE[1]) / 2,
+    (LIGHT_SQUARE[2] + DARK_SQUARE[2]) / 2,
+    255
+};
 
 #endif // #define FATPUP_UI_COLORS_H

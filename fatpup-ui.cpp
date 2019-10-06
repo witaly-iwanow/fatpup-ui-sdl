@@ -77,6 +77,10 @@ int main(int argc, char* argv[])
                     case SDL_QUIT:
                         quit = true;
                         break;
+                    case SDL_MOUSEBUTTONDOWN:
+                        if (e.button.button == SDL_BUTTON_LEFT)
+                            board.OnClick(e.button.x / renderScale, e.button.y / renderScale);
+                        break;
                     case SDL_WINDOWEVENT:
                     {
                         switch(e.window.event)

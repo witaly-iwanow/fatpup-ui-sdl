@@ -99,6 +99,8 @@ void Board::SetPosition(const fatpup::Position& pos)
 void Board::Move(fatpup::Move move)
 {
     _position += move;
+    _lastMoveSquareIdx[0] = DisplayFatpupRow(move.fields.src_row) * fatpup::BOARD_SIZE + DisplayFatpupCol(move.fields.src_col);
+    _lastMoveSquareIdx[1] = DisplayFatpupRow(move.fields.dst_row) * fatpup::BOARD_SIZE + DisplayFatpupCol(move.fields.dst_col);
 }
 
 void Board::ProcessUserMove(const int destSquareIdx)
@@ -106,8 +108,8 @@ void Board::ProcessUserMove(const int destSquareIdx)
     if (_selectedSquareIdx == -1)
     {
         // new square/piece selected
-        const int row = DisplayRowToFatpup(destSquareIdx / fatpup::BOARD_SIZE);
-        const int col = DisplayColToFatpup(destSquareIdx % fatpup::BOARD_SIZE);
+        const int row = DisplayFatpupRow(destSquareIdx / fatpup::BOARD_SIZE);
+        const int col = DisplayFatpupCol(destSquareIdx % fatpup::BOARD_SIZE);
         const auto piece = _position.square(row, col).pieceWithColor();
         if (piece & fatpup::PieceMask)
         {
@@ -124,10 +126,10 @@ void Board::ProcessUserMove(const int destSquareIdx)
     }
     else
     {
-        const int src_row = DisplayRowToFatpup(_selectedSquareIdx / fatpup::BOARD_SIZE);
-        const int src_col = DisplayColToFatpup(_selectedSquareIdx % fatpup::BOARD_SIZE);
-        const int dst_row = DisplayRowToFatpup(destSquareIdx / fatpup::BOARD_SIZE);
-        const int dst_col = DisplayColToFatpup(destSquareIdx % fatpup::BOARD_SIZE);
+        const int src_row = DisplayFatpupRow(_selectedSquareIdx / fatpup::BOARD_SIZE);
+        const int src_col = DisplayFatpupCol(_selectedSquareIdx % fatpup::BOARD_SIZE);
+        const int dst_row = DisplayFatpupRow(destSquareIdx / fatpup::BOARD_SIZE);
+        const int dst_col = DisplayFatpupCol(destSquareIdx % fatpup::BOARD_SIZE);
         const auto moves = _position.possibleMoves(src_row, src_col, dst_row, dst_col);
 
         _selectedSquareIdx = -1;
@@ -163,12 +165,7 @@ void Board::OnClick(int posx, int posy)
     int yIdx = (int)(posy / _squareSize);
 
     if (xIdx >= 0 && xIdx < fatpup::BOARD_SIZE && yIdx >= 0 && yIdx < fatpup::BOARD_SIZE)
-    {
         ProcessUserMove(yIdx * fatpup::BOARD_SIZE + xIdx);
-
-        //if (_selectedSquareIdx != -1)
-        //    _selectedSquare.setPosition(xIdx * _squareSize + SELECTED_BORDER_WIDTH, yIdx * _squareSize + SELECTED_BORDER_WIDTH);
-    }
 }
 
 void Board::Render() const
@@ -184,17 +181,25 @@ void Board::Render() const
             rect.w = _squareSize;
             rect.h = _squareSize;
 
-            if ((row ^ col) & 1)
-                SDL_SetRenderDrawColor(_renderer, DARK_SQUARE_R, DARK_SQUARE_G, DARK_SQUARE_B, 0xff);
-            else
-                SDL_SetRenderDrawColor(_renderer, LIGHT_SQUARE_R, LIGHT_SQUARE_G, LIGHT_SQUARE_B, 0xff);
-
+            const uint8_t* rgba = ((row ^ col) & 1) ? DARK_SQUARE : LIGHT_SQUARE;
+            SDL_SetRenderDrawColor(_renderer, rgba[0], rgba[1], rgba[2], rgba[3]);
             SDL_RenderFillRect(_renderer, &rect);
 
-            //if (idx == _selectedSquareIdx)
-            //    window.draw(_selectedSquare);
+            bool squareHasOverlay = false;
+            if (_selectedSquareIdx != -1 && _selectedSquareIdx == (row * fatpup::BOARD_SIZE + col))
+                rgba = SELECTED_SQUARE, squareHasOverlay = true;
+            else if ((_lastMoveSquareIdx[0] != -1 && _lastMoveSquareIdx[0] == (row * fatpup::BOARD_SIZE + col)) ||
+                     (_lastMoveSquareIdx[1] != -1 && _lastMoveSquareIdx[1] == (row * fatpup::BOARD_SIZE + col)))
+                rgba = LAST_MOVE_SQUARE, squareHasOverlay = true;
 
-            const auto piece = _position.square(DisplayRowToFatpup(row), DisplayColToFatpup(col)).pieceWithColor();
+            if (squareHasOverlay)
+            {
+                SDL_SetRenderDrawColor(_renderer, rgba[0], rgba[1], rgba[2], rgba[3]);
+                SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
+                SDL_RenderFillRect(_renderer, &rect);
+            }
+
+            const auto piece = _position.square(DisplayFatpupRow(row), DisplayFatpupCol(col)).pieceWithColor();
             if (piece)
                 SDL_RenderCopy(_renderer, _pieceTextures.at(piece), NULL, &rect);
 

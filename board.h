@@ -32,11 +32,13 @@ private:
     void EngineThreadFunc();
     void RequestEngineMove(fatpup::Move move);
 
-    inline int DisplayRowToFatpup(int row) const { return (_playingWhite ? (fatpup::BOARD_SIZE - 1 - row) : row); }
-    inline int DisplayColToFatpup(int col) const { return (_playingWhite ? col : (fatpup::BOARD_SIZE - 1 - col)); }
+    // these toggle row/col from display to fatpup and back
+    inline int DisplayFatpupRow(int row) const { return (_playingWhite ? (fatpup::BOARD_SIZE - 1 - row) : row); }
+    inline int DisplayFatpupCol(int col) const { return (_playingWhite ? col : (fatpup::BOARD_SIZE - 1 - col)); }
 
     SDL_Renderer* _renderer = nullptr;
     int _selectedSquareIdx = -1;
+    int _lastMoveSquareIdx[2] = { -1, -1 };
 
     std::map<unsigned char, SDL_Texture*> _pieceTextures;
     fatpup::Position _position;
@@ -50,8 +52,6 @@ private:
     std::mutex _engineMutex;
     std::condition_variable _engineCv;
     std::atomic<bool> _shutdown{false};
-
-    static constexpr float SELECTED_BORDER_WIDTH = 8.0f;
 };
 
 #endif // #define FATPUP_UI_BOARD_H
