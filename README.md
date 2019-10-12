@@ -1,7 +1,17 @@
-<ul>
-<li><img src="resources/BlackKing.png" width=64 /></li>
-<li><img src="resources/BlackQueen.png" width=64 /></li>
-</ul>
+<p float="left">
+    <img src="resources/WhiteKing.png" width=40 />
+    <img src="resources/WhiteQueen.png" width=40 />
+    <img src="resources/WhiteRook.png" width=40 />
+    <img src="resources/WhiteBishop.png" width=40 />
+    <img src="resources/WhiteKnight.png" width=40 />
+    <img src="resources/WhitePawn.png" width=40 />
+    <img src="resources/BlackKing.png" width=40 />
+    <img src="resources/BlackQueen.png" width=40 />
+    <img src="resources/BlackRook.png" width=40 />
+    <img src="resources/BlackBishop.png" width=40 />
+    <img src="resources/BlackKnight.png" width=40 />
+    <img src="resources/BlackPawn.png" width=40 />
+</p>
 
 Sample UI for fatpup chess library based on SDL2
 
