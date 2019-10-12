@@ -32,9 +32,13 @@ bool InitSDL(SDLContext& ctx)
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
+    auto windowHeight = displayMode.h * 3 / 4;
+
     ctx.window = SDL_CreateWindow("Fatpup Chess", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                  targetWindowHeight * targetWindowAspectNom / targetWindowAspectDenom,
-                                  targetWindowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+                                  windowHeight * targetWindowAspectNom / targetWindowAspectDenom,
+                                  windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
     if (!ctx.window)
     {
         std::cerr << "SDL_CreateWindow failed, error: " << SDL_GetError() << "\n";
@@ -64,12 +68,12 @@ int main(int argc, char* argv[])
         int currWindowWidth = 0, currWindowHeight = 0;
         SDL_GetWindowSize(ctx.window, &currWindowWidth, &currWindowHeight);
         float renderScale = 1.0f;
+        bool windowSizeChanged = true;
 
         SDL_Event e;
         bool quit = false;
         while (!quit)
         {
-            bool windowSizeChanged = false;
             while (SDL_PollEvent(&e) > 0)
             {
                 switch (e.type)
@@ -91,42 +95,42 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-
-                if (windowSizeChanged)
-                {
-                    windowSizeChanged = false;
-
-                    int width = 0, height = 0;
-                    SDL_GetWindowSize(ctx.window, &width, &height);
-
-                    width -= (width % 5);
-                    height -= (height % 4);
-
-                    if (width < 80)
-                        width = 80;
-                    if (height < 64)
-                        height = 64;
-
-                    if (std::abs(width - currWindowWidth) > std::abs(height - currWindowHeight))
-                        height = width * 4 / 5;
-                    else
-                        width = height * 5 / 4;
-
-                    SDL_SetWindowSize(ctx.window, width, height);
-                    currWindowWidth = width;
-                    currWindowHeight = height;
-                    renderScale = (float)currWindowHeight / (float)targetWindowHeight;
-                }
-
-                SDL_SetRenderDrawColor(ctx.renderer, 0, 0, 0, 255);
-                SDL_RenderClear(ctx.renderer);
-
-                SDL_RenderSetScale(ctx.renderer, renderScale, renderScale);
-                board.Render();
-                SDL_RenderSetScale(ctx.renderer, 1.0f, 1.0f);
-
-                SDL_RenderPresent(ctx.renderer);
             }
+
+            if (windowSizeChanged)
+            {
+                windowSizeChanged = false;
+
+                int width = 0, height = 0;
+                SDL_GetWindowSize(ctx.window, &width, &height);
+
+                width -= (width % 5);
+                height -= (height % 4);
+
+                if (width < 80)
+                    width = 80;
+                if (height < 64)
+                    height = 64;
+
+                if (std::abs(width - currWindowWidth) > std::abs(height - currWindowHeight))
+                    height = width * 4 / 5;
+                else
+                    width = height * 5 / 4;
+
+                SDL_SetWindowSize(ctx.window, width, height);
+                currWindowWidth = width;
+                currWindowHeight = height;
+                renderScale = (float)currWindowHeight / (float)targetWindowHeight;
+            }
+
+            SDL_SetRenderDrawColor(ctx.renderer, 0, 0, 0, 255);
+            SDL_RenderClear(ctx.renderer);
+
+            SDL_RenderSetScale(ctx.renderer, renderScale, renderScale);
+            board.Render();
+            SDL_RenderSetScale(ctx.renderer, 1.0f, 1.0f);
+
+            SDL_RenderPresent(ctx.renderer);
         }
     }
 
