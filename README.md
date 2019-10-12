@@ -13,7 +13,7 @@
     <img src="resources/BlackPawn.png" width=40 />
 </p>
 
-Sample UI for fatpup chess library based on SDL2
+Sample UI for fatpup chess library based on SDL2. It's currently a user - engine game using MicroMax chess engine. You always play white, make a move and wait for the engine to reply (can take up to 10 seconds).
 
 ## How to build
 
