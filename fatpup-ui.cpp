@@ -8,6 +8,7 @@
 static constexpr int targetWindowHeight = 800;
 static constexpr int targetWindowAspectNom = 5;
 static constexpr int targetWindowAspectDenom = 4;
+static constexpr unsigned int refreshTimeMs = 100;
 
 struct SDLContext
 {
@@ -70,6 +71,8 @@ int main(int argc, char* argv[])
         float renderScale = 1.0f;
         bool windowSizeChanged = true;
 
+        unsigned int nextRefreshTimeMs = 0;
+
         SDL_Event e;
         bool quit = false;
         while (!quit)
@@ -123,14 +126,22 @@ int main(int argc, char* argv[])
                 renderScale = (float)currWindowHeight / (float)targetWindowHeight;
             }
 
-            SDL_SetRenderDrawColor(ctx.renderer, 0, 0, 0, 255);
-            SDL_RenderClear(ctx.renderer);
+            unsigned int currTimeMs = SDL_GetTicks();
+            if (!SDL_TICKS_PASSED(currTimeMs, nextRefreshTimeMs))
+                SDL_Delay(refreshTimeMs / 4);
+            else
+            {
+                nextRefreshTimeMs = currTimeMs + refreshTimeMs;
 
-            SDL_RenderSetScale(ctx.renderer, renderScale, renderScale);
-            board.Render();
-            SDL_RenderSetScale(ctx.renderer, 1.0f, 1.0f);
+                SDL_SetRenderDrawColor(ctx.renderer, 0, 0, 0, 255);
+                SDL_RenderClear(ctx.renderer);
 
-            SDL_RenderPresent(ctx.renderer);
+                SDL_RenderSetScale(ctx.renderer, renderScale, renderScale);
+                board.Render();
+                SDL_RenderSetScale(ctx.renderer, 1.0f, 1.0f);
+
+                SDL_RenderPresent(ctx.renderer);
+            }
         }
     }
 
