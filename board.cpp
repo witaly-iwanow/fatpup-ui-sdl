@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 
 #include "board.h"
 #include "colors.h"
@@ -14,7 +15,7 @@ Board::Board(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool pla
     auto smallestDimension = std::min(windowWidth, windowHeight) / fatpup::BOARD_SIZE;
     if (smallestDimension < 16)
         smallestDimension = 16;
-    _squareSize = smallestDimension;
+    _squareSize = (float)smallestDimension;
 
     LoadPieceTexture(fatpup::White | fatpup::King, "resources/WhiteKing.png");
     LoadPieceTexture(fatpup::White | fatpup::Queen, "resources/WhiteQueen.png");
@@ -176,10 +177,10 @@ void Board::Render() const
         for (int col = 0; col < fatpup::BOARD_SIZE; ++col)
         {
             SDL_Rect rect;
-            rect.x = col * _squareSize;
-            rect.y = row * _squareSize;
-            rect.w = _squareSize;
-            rect.h = _squareSize;
+            rect.x = (int)(col * _squareSize);
+            rect.y = (int)(row * _squareSize);
+            rect.w = (int)_squareSize;
+            rect.h = (int)_squareSize;
 
             const uint8_t* rgba = ((row ^ col) & 1) ? DARK_SQUARE : LIGHT_SQUARE;
             SDL_SetRenderDrawColor(_renderer, rgba[0], rgba[1], rgba[2], rgba[3]);
