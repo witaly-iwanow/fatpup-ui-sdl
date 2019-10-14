@@ -61,4 +61,4 @@ Throw it under CMake with paths to SDL2 and SDL2 Image set:
     mkdir _cmake && cd _cmake
     cmake -DSDL2_PATH=C:\sdl\SDL2-2.0.10 -DSDL2_IMAGE_PATH=C:\sdl\SDL2_image-2.0.5 ..
 
-Open fatpup-ui.sln with Visual Studio set fatpup-ui as startup project. You're all set, feel free to hit Ctrl-F5 to see it running.
+Open fatpup-ui.sln with Visual Studio and set fatpup-ui as startup project. You're all set, feel free to hit Ctrl-F5 to see it running.
