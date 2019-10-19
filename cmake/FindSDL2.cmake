@@ -1,6 +1,7 @@
 # Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
 # file Copyright.txt or https://cmake.org/licensing for details.
 
+#  Copyright 2019 Vitaly Ivanov <witaly.benhaiwanow@gmail.com>
 #  Copyright 2019 Amine Ben Hassouna <amine.benhassouna@gmail.com>
 #  Copyright 2000-2019 Kitware, Inc. and Contributors
 #  All rights reserved.
@@ -96,8 +97,7 @@ This module responds to the following cache variables:
 
 Don't forget to include SDLmain.h and SDLmain.m in your project for the
 OS X framework based version. (Other versions link to -lSDL2main which
-this module will try to find on your behalf.) Also for OS X, this
-module will automatically add the -framework Cocoa on your behalf.
+this module will try to find on your behalf.)
 
 
 Additional Note: If you see an empty SDL2_LIBRARY in your project
@@ -113,7 +113,10 @@ SDL2_LIBRARIES, SDL2::Core and SDL2::Main does not get created.
 $SDL2DIR is an environment variable that would correspond to the
 ./configure --prefix=$SDL2DIR used in building SDL2.  l.e.galup 9-20-02
 
-
+Changes by Vitaly Ivanov:
+  Remove Threads/Cocoa code as it's pretty much useless and breaks build on
+  Windows and macOS 10.15/Xcode 11. Just link to pthreads manually if there
+  are some thread-related unresolved externals (happens on Linux).
 
 Created by Amine Ben Hassouna:
   Adapt FindSDL.cmake to SDL2 (FindSDL2.cmake).
@@ -231,26 +234,6 @@ if(NOT SDL2_BUILDING_LIBRARY)
   endif()
 endif()
 
-# SDL2 may require threads on your system.
-# The Apple build may not need an explicit flag because one of the
-# frameworks may already provide it.
-# But for non-OSX systems, I will use the CMake Threads package.
-if(UNIX AND NOT APPLE)
-  find_package(Threads QUIET)
-  if(NOT CMAKE_THREAD_LIBS_INIT)
-    set(SDL2_THREADS_NOT_FOUND "Could NOT find Threads (Threads is required by SDL2).")
-    if(SDL2_FIND_REQUIRED)
-      message(FATAL_ERROR ${SDL2_THREADS_NOT_FOUND})
-    else()
-        if(NOT SDL2_FIND_QUIETLY)
-          message(STATUS ${SDL2_THREADS_NOT_FOUND})
-        endif()
-      return()
-    endif()
-    unset(SDL2_THREADS_NOT_FOUND)
-  endif()
-endif()
-
 # MinGW needs an additional link flag, -mwindows
 # It's total link flags should look like -lmingw32 -lSDL2main -lSDL2 -mwindows
 if(MINGW)
@@ -265,23 +248,6 @@ if(SDL2_LIBRARY)
       set(SDL2_LIBRARIES "${SDL2MAIN_LIBRARY}" ${SDL2_LIBRARIES})
     endif()
     unset(_SDL2_MAIN_INDEX)
-  endif()
-
-  # For OS X, SDL2 uses Cocoa as a backend so it must link to Cocoa.
-  # CMake doesn't display the -framework Cocoa string in the UI even
-  # though it actually is there if I modify a pre-used variable.
-  # I think it has something to do with the CACHE STRING.
-  # So I use a temporary variable until the end so I can set the
-  # "real" variable in one-shot.
-  if(APPLE)
-    set(SDL2_LIBRARIES ${SDL2_LIBRARIES} "-framework Cocoa")
-  endif()
-
-  # For threads, as mentioned Apple doesn't need this.
-  # In fact, there seems to be a problem if I used the Threads package
-  # and try using this line, so I'm just skipping it entirely for OS X.
-  if(NOT APPLE)
-    set(SDL2_LIBRARIES ${SDL2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
   endif()
 
   # For MinGW library
@@ -338,18 +304,6 @@ if(SDL2_FOUND)
     set_target_properties(SDL2::Core PROPERTIES
                           IMPORTED_LOCATION "${SDL2_LIBRARY}"
                           INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIR}")
-
-    if(APPLE)
-      # For OS X, SDL2 uses Cocoa as a backend so it must link to Cocoa.
-      # For more details, please see above.
-      set_property(TARGET SDL2::Core APPEND PROPERTY
-                   INTERFACE_LINK_OPTIONS "-framework Cocoa")
-    elseif(UNIX)
-      # For threads, as mentioned Apple doesn't need this.
-      # For more details, please see above.
-      set_property(TARGET SDL2::Core APPEND PROPERTY
-                   INTERFACE_LINK_LIBRARIES Threads::Threads)
-    endif()
   endif()
 
   # SDL2::Main target
