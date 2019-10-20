@@ -2,8 +2,10 @@
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_ttf.h"
 
 #include "board.h"
+#include "movepanel.h"
 
 static constexpr int targetWindowHeight = 800;
 static constexpr int targetWindowAspectNom = 5;
@@ -28,6 +30,12 @@ bool InitSDL(SDLContext& ctx)
     if (!(IMG_Init(imgFlags) & imgFlags))
     {
         std::cerr << "IMG_Init failed, error: " << IMG_GetError() << "\n";
+        return false;
+    }
+
+    if (TTF_Init() < 0)
+    {
+        std::cerr << "TTF_Init failed, error: " << TTF_GetError() << "\n";
         return false;
     }
 
@@ -65,6 +73,11 @@ int main(int argc, char* argv[])
         fatpup::Position initialPos;
         initialPos.setInitial();
         board.SetPosition(initialPos);
+
+        MovePanel movePanel(ctx.renderer, targetWindowHeight,
+                            targetWindowHeight * (targetWindowAspectNom - targetWindowAspectDenom) / targetWindowAspectDenom,
+                            targetWindowHeight);
+        board.SetMovePanel(&movePanel);
 
         int currWindowWidth = 0, currWindowHeight = 0;
         SDL_GetWindowSize(ctx.window, &currWindowWidth, &currWindowHeight);
@@ -138,6 +151,7 @@ int main(int argc, char* argv[])
 
                 SDL_RenderSetScale(ctx.renderer, renderScale, renderScale);
                 board.Render();
+                movePanel.Render();
                 SDL_RenderSetScale(ctx.renderer, 1.0f, 1.0f);
 
                 SDL_RenderPresent(ctx.renderer);
@@ -150,6 +164,7 @@ int main(int argc, char* argv[])
     if (ctx.window)
         SDL_DestroyWindow(ctx.window);
 
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 

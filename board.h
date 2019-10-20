@@ -12,12 +12,15 @@
 
 #include "fatpup/position.h"
 
+class MovePanel;
+
 class Board
 {
 public:
     explicit Board(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool playingWhite = true);
     virtual ~Board();
 
+    void SetMovePanel(MovePanel* movePanel);
     void SetPosition(const fatpup::Position& pos);
     void Move(fatpup::Move move);
 
@@ -42,6 +45,7 @@ private:
 
     std::map<unsigned char, SDL_Texture*> _pieceTextures;
     fatpup::Position _position;
+    MovePanel* _movePanel = nullptr;
 
     float _squareSize;
     bool _playingWhite;

@@ -1,8 +1,10 @@
 #include <iostream>
 #include <algorithm>
 
-#include "board.h"
 #include "colors.h"
+
+#include "movepanel.h"
+#include "board.h"
 
 extern "C" void umaxSetInitial();
 extern "C" void umaxMakeMove(const char* m);
@@ -91,14 +93,27 @@ void Board::EngineThreadFunc()
     }
 }
 
+void Board::SetMovePanel(MovePanel* movePanel)
+{
+    _movePanel = movePanel;
+    if (_movePanel)
+        _movePanel->SetPosition(_position);
+}
+
 void Board::SetPosition(const fatpup::Position& pos)
 {
+    if (_movePanel)
+        _movePanel->SetPosition(pos);
+
     _position = pos;
     umaxSetInitial();
 }
 
 void Board::Move(fatpup::Move move)
 {
+    if (_movePanel)
+        _movePanel->Move(move);
+
     _position += move;
     _lastMoveSquareIdx[0] = DisplayFatpupRow(move.fields.src_row) * fatpup::BOARD_SIZE + DisplayFatpupCol(move.fields.src_col);
     _lastMoveSquareIdx[1] = DisplayFatpupRow(move.fields.dst_row) * fatpup::BOARD_SIZE + DisplayFatpupCol(move.fields.dst_col);

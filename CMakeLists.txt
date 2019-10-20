@@ -13,13 +13,14 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED >=2.0.0)
+find_package(SDL2_ttf REQUIRED >=2.0.0)
 
 add_subdirectory(fatpup)
 
-add_executable(fatpup-ui board.cpp fatpup-ui.cpp umax4_8.c)
-target_include_directories(fatpup-ui PRIVATE ${FATPUP_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR})
+add_executable(fatpup-ui board.cpp board.h colors.h fatpup-ui.cpp movepanel.cpp movepanel.h umax4_8.c)
+target_include_directories(fatpup-ui PRIVATE ${FATPUP_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
 
-target_link_libraries(fatpup-ui ${FATPUP_LIBRARIES} SDL2::Main SDL2::Image)
+target_link_libraries(fatpup-ui ${FATPUP_LIBRARIES} SDL2::Main SDL2::Image SDL2::TTF)
 if (UNIX AND NOT APPLE)
     target_link_libraries(fatpup-ui pthread)
 endif()
@@ -42,7 +43,9 @@ get_filename_component(SDL2_DLL_FOLDER ${SDL2_LIBRARY} DIRECTORY)
 file (GLOB SDL2_DLLS ${SDL2_DLL_FOLDER}/*.dll)
 get_filename_component(SDL2_IMAGE_DLL_FOLDER ${SDL2_IMAGE_LIBRARY} DIRECTORY)
 file (GLOB SDL2_IMAGE_DLLS ${SDL2_IMAGE_DLL_FOLDER}/*.dll)
+get_filename_component(SDL2_TTF_DLL_FOLDER ${SDL2_TTF_LIBRARY} DIRECTORY)
+file (GLOB SDL2_TTF_DLLS ${SDL2_TTF_DLL_FOLDER}/*.dll)
 add_custom_command(TARGET fatpup-ui POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                   ${SDL2_DLLS} ${SDL2_IMAGE_DLLS} $<TARGET_FILE_DIR:fatpup-ui>)
+                   ${SDL2_DLLS} ${SDL2_IMAGE_DLLS} ${SDL2_TTF_DLLS} $<TARGET_FILE_DIR:fatpup-ui>)
 endif()
