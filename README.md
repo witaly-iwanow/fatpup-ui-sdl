@@ -23,9 +23,9 @@ fatpup chess engine is submodule'd, so you have to pull it separately:
     git submodule update --init --recursive
 
 ## Build (macOS)
-Install SDL2 and SDL2 Image with Homebrew:
+Install v2 SDL, SDL_image and SDL_ttf with Homebrew:
 
-    brew install sdl2 sdl2_image
+    brew install sdl2 sdl2_image sdl2_ttf
 
 Throw it under CMake, make it and run:
 
@@ -39,13 +39,13 @@ or if you need an Xcode project:
     Open fatpup-ui.xcodeproj
 
 ## Build (Linux)
-Install SDL2 and SDL2 Image with apt/yum:
+Install v2 SDL, SDL_image and SDL_ttf with apt/yum:
 
-    sudo apt install libsdl2-dev libsdl2-image-dev
+    sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 
 or
 
-    sudo yum install SDL2-devel SDL2_image-devel
+    sudo yum install SDL2-devel SDL2_image-devel SDL2_ttf-devel
 
 Throw it under CMake, make it and run:
 
@@ -54,11 +54,11 @@ Throw it under CMake, make it and run:
     make && ./fatpup-ui
 
 ## Build (Windows)
-Download the latest SDL2 and SDL2-image **Development** libraries (as of the time of writing [SDL 2.0.10](https://www.libsdl.org/release/SDL2-devel-2.0.10-VC.zip) and [SDL2 Image 2.0.5](https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.0.5-VC.zip)) and unzip them somewhere nice and tidy, i.e. no spaces in the path, C:\sdl for example.  
+Download the latest v2 SDL, SDL_image and SDL_ttf **Development** libraries (as of the time of writing [SDL 2.0.10](https://www.libsdl.org/release/SDL2-devel-2.0.10-VC.zip), [SDL_image 2.0.5](https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.0.5-VC.zip) and [SDL_ttf 2.0.15](https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.0.15-VC.zip)) and unzip them somewhere nice and tidy, i.e. no spaces in the path, C:\sdl for example.  
 
-Throw it under CMake with paths to SDL2 and SDL2 Image set:
+Throw it under CMake with paths to SDL, SDL_image and SDL_ttf set:
 
     mkdir _cmake && cd _cmake
-    cmake -DSDL2_PATH=C:\sdl\SDL2-2.0.10 -DSDL2_IMAGE_PATH=C:\sdl\SDL2_image-2.0.5 ..
+    cmake -DSDL2_PATH=C:\sdl\SDL2-2.0.10 -DSDL2_IMAGE_PATH=C:\sdl\SDL2_image-2.0.5 -DSDL2_TTF_PATH=C:\sdl\SDL2_ttf-2.0.15 ..
 
 Open fatpup-ui.sln with Visual Studio and set fatpup-ui as startup project. You're all set, feel free to hit Ctrl-F5 to see it running.
