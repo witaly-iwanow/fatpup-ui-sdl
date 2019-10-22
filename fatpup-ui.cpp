@@ -7,7 +7,7 @@
 #include "board.h"
 #include "movepanel.h"
 
-static constexpr int targetWindowHeight = 800;
+static constexpr int targetWindowHeight = 1200;
 static constexpr int targetWindowAspectNom = 5;
 static constexpr int targetWindowAspectDenom = 4;
 static constexpr unsigned int refreshTimeMs = 100;
@@ -47,7 +47,7 @@ bool InitSDL(SDLContext& ctx)
 
     ctx.window = SDL_CreateWindow("Fatpup Chess", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   windowHeight * targetWindowAspectNom / targetWindowAspectDenom,
-                                  windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+                                  windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!ctx.window)
     {
         std::cerr << "SDL_CreateWindow failed, error: " << SDL_GetError() << "\n";
@@ -82,6 +82,7 @@ int main(int argc, char* argv[])
         int currWindowWidth = 0, currWindowHeight = 0;
         SDL_GetWindowSize(ctx.window, &currWindowWidth, &currWindowHeight);
         float renderScale = 1.0f;
+        float pixelScale = 1.0f;
         bool windowSizeChanged = true;
 
         unsigned int nextRefreshTimeMs = 0;
@@ -99,7 +100,7 @@ int main(int argc, char* argv[])
                         break;
                     case SDL_MOUSEBUTTONDOWN:
                         if (e.button.button == SDL_BUTTON_LEFT)
-                            board.OnClick((int)(e.button.x / renderScale), (int)(e.button.y / renderScale));
+                            board.OnClick((int)(e.button.x / pixelScale), (int)(e.button.y / pixelScale));
                         break;
                     case SDL_WINDOWEVENT:
                     {
@@ -136,7 +137,11 @@ int main(int argc, char* argv[])
                 SDL_SetWindowSize(ctx.window, width, height);
                 currWindowWidth = width;
                 currWindowHeight = height;
-                renderScale = (float)currWindowHeight / (float)targetWindowHeight;
+                pixelScale = (float)currWindowHeight / (float)targetWindowHeight;
+
+                int highDpiWidth = 0, highDpiHeight = 0;
+                SDL_GetRendererOutputSize(ctx.renderer, &highDpiWidth, &highDpiHeight);
+                renderScale = (float)highDpiHeight / (float)targetWindowHeight;
             }
 
             unsigned int currTimeMs = SDL_GetTicks();

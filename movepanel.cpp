@@ -41,12 +41,12 @@ MovePanel::MovePanel(SDL_Renderer* renderer, int xOff, int width, int height):
     _backgroundRect.h = height;
 
     _movesTextureRect[White].x = _backgroundRect.x + _backgroundRect.w / 32;
-    _movesTextureRect[White].y = _backgroundRect.w / 8;
+    _movesTextureRect[White].y = texH + texH / 2;
     _movesTextureRect[Black].x = _movesTextureRect[White].x + _backgroundRect.w / 2;
     _movesTextureRect[Black].y = _movesTextureRect[White].y;
 
     _winDrawIndicatorTextureRect.x = _movesTextureRect[White].x;
-    _winDrawIndicatorTextureRect.y = _backgroundRect.h - texH - _backgroundRect.w / 32;
+    _winDrawIndicatorTextureRect.y = _backgroundRect.h - texH - texH / 4;
 
     _turnIndicatorTextureRect[White].x = _turnIndicatorTextureRect[Black].x = _movesTextureRect[White].x;
     _turnIndicatorTextureRect[White].y = _turnIndicatorTextureRect[Black].y = _backgroundRect.w / 32;
@@ -136,7 +136,7 @@ void MovePanel::UpdateTextures()
 
         if (_positionState == fatpup::Position::State::Checkmate)
         {
-            const auto c = _position.isWhiteTurn() ? White : Black;
+            const auto c = _position.isWhiteTurn() ? Black : White;
             const std::string winText(std::string(c ? "Black" : "White") + " won");
             SDL_Surface* surface = TTF_RenderText_Blended(_font, winText.c_str(), colors[c]);
             UpdateTexture(surface, &_winDrawIndicatorTexture, &_winDrawIndicatorTextureRect);
