@@ -62,3 +62,5 @@ Throw it under CMake with paths to SDL, SDL_image and SDL_ttf set:
     cmake -DSDL2_PATH=C:\sdl\SDL2-2.0.10 -DSDL2_IMAGE_PATH=C:\sdl\SDL2_image-2.0.5 -DSDL2_TTF_PATH=C:\sdl\SDL2_ttf-2.0.15 ..
 
 Open fatpup-ui.sln with Visual Studio and set fatpup-ui as startup project. You're all set, feel free to hit Ctrl-F5 to see it running.
+
+![Screenshot](screenshots/fast-checkmate.png)
