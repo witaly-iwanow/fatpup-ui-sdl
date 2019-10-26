@@ -8,15 +8,13 @@ class MinimaxEngine: public Engine
 public:
     MinimaxEngine(const fatpup::Position& pos);
 
-    void Start() override {}
+    void Start() override;
     void Stop() override {}
 
     fatpup::Move GetBestMove() override { return _bestMove; }
     void MoveDone(fatpup::Move move) override;
 
 private:
-    void FindBestMove();
-
     fatpup::Position _pos;
     fatpup::Move _bestMove;
 };

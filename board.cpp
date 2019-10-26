@@ -95,7 +95,7 @@ void Board::EngineThreadFunc()
 
         _engine->MoveDone(_lastMove);
         _engine->Start();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         _engine->Stop();
 
         const auto engineMove = _engine->GetBestMove();

@@ -13,7 +13,7 @@
     <img src="resources/BlackPawn.png" width=40 />
 </p>
 
-Sample UI for fatpup chess library based on SDL2. It's currently a user - engine game using a primitive 1-ply minimax chess engine. You always play white.
+Sample UI for fatpup chess library based on SDL2. It's currently a user - engine game using a simple 3-ply minimax chess engine. You always play white.
 
 ## Get the code
 fatpup chess engine is submodule'd, so you have to pull it separately:
