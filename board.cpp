@@ -1,14 +1,11 @@
 #include <iostream>
 #include <algorithm>
+#include <chrono>
 
 #include "colors.h"
 
 #include "movepanel.h"
 #include "board.h"
-
-extern "C" void umaxSetInitial();
-extern "C" void umaxMakeMove(const char* m);
-extern "C" void umaxGetMove(char* m);
 
 Board::Board(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool playingWhite):
     _renderer(renderer),
@@ -36,18 +33,37 @@ Board::Board(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool pla
     _position.setEmpty();
 
     _lastMove.setEmpty();
-    _engineThread = new std::thread(&Board::EngineThreadFunc, this);
 }
 
 Board::~Board()
 {
+    ShutdownEngineThread();
+
     for (auto t: _pieceTextures)
         SDL_DestroyTexture(t.second);
+}
 
-    _shutdown = true;
-    _engineCv.notify_one();
-    _engineThread->join();
-    delete _engineThread;
+void Board::ShutdownEngineThread()
+{
+    if (_engineThread)
+    {
+        _shutdown = true;
+        _engineCv.notify_one();
+        _engineThread->join();
+        delete _engineThread;
+        _engineThread = nullptr;
+    }
+    _engine = nullptr;
+}
+
+void Board::SetEngine(Engine* engine)
+{
+    ShutdownEngineThread();
+    if (engine)
+    {
+        _engine = engine;
+        _engineThread = new std::thread(&Board::EngineThreadFunc, this);
+    }
 }
 
 void Board::LoadPieceTexture(unsigned char piece, const char* pieceTexturePath)
@@ -77,17 +93,14 @@ void Board::EngineThreadFunc()
         if (_shutdown)
             break;
 
-        char move[4];
-        move[0] = 'a' + _lastMove.fields.src_col;
-        move[1] = '1' + _lastMove.fields.src_row;
-        move[2] = 'a' + _lastMove.fields.dst_col;
-        move[3] = '1' + _lastMove.fields.dst_row;
-        umaxMakeMove(move);
-        umaxGetMove(move);
+        _engine->MoveDone(_lastMove);
+        _engine->Start();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        _engine->Stop();
 
-        const auto moves = _position.possibleMoves(move[1] - '1', move[0] - 'a', move[3] - '1', move[2] - 'a');
-        if (!moves.empty())
-            Move(moves[0]);
+        const auto engineMove = _engine->GetBestMove();
+        if (!engineMove.isEmpty())
+            Move(engineMove);
 
         _lastMove.setEmpty();
     }
@@ -106,7 +119,6 @@ void Board::SetPosition(const fatpup::Position& pos)
         _movePanel->SetPosition(pos);
 
     _position = pos;
-    umaxSetInitial();
 }
 
 void Board::Move(fatpup::Move move)

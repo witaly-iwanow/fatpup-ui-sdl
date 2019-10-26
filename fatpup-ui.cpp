@@ -66,6 +66,8 @@ bool InitSDL(SDLContext& ctx)
 
 int main(int argc, char* argv[])
 {
+    Engine* engine = nullptr;
+
     SDLContext ctx;
     if (InitSDL(ctx))
     {
@@ -73,6 +75,8 @@ int main(int argc, char* argv[])
         fatpup::Position initialPos;
         initialPos.setInitial();
         board.SetPosition(initialPos);
+        engine = Engine::create("minimax", initialPos);
+        board.SetEngine(engine);
 
         MovePanel movePanel(ctx.renderer, targetWindowHeight,
                             targetWindowHeight * (targetWindowAspectNom - targetWindowAspectDenom) / targetWindowAspectDenom,
@@ -163,6 +167,8 @@ int main(int argc, char* argv[])
             }
         }
     }
+
+    delete engine;
 
     if (ctx.renderer)
         SDL_DestroyRenderer(ctx.renderer);

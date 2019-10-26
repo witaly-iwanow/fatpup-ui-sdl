@@ -12,6 +12,8 @@
 
 #include "fatpup/position.h"
 
+#include "engines/engine.h"
+
 class MovePanel;
 
 class Board
@@ -20,6 +22,7 @@ public:
     explicit Board(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool playingWhite = true);
     virtual ~Board();
 
+    void SetEngine(Engine* engine);
     void SetMovePanel(MovePanel* movePanel);
     void SetPosition(const fatpup::Position& pos);
     void Move(fatpup::Move move);
@@ -34,6 +37,7 @@ private:
 
     void EngineThreadFunc();
     void RequestEngineMove(fatpup::Move move);
+    void ShutdownEngineThread();
 
     // these toggle row/col from display to fatpup and back
     inline int DisplayFatpupRow(int row) const { return (_playingWhite ? (fatpup::BOARD_SIZE - 1 - row) : row); }
@@ -52,7 +56,8 @@ private:
 
     fatpup::Move _lastMove;
 
-    std::thread* _engineThread;
+    Engine* _engine = nullptr;
+    std::thread* _engineThread = nullptr;
     std::mutex _engineMutex;
     std::condition_variable _engineCv;
     std::atomic<bool> _shutdown{false};

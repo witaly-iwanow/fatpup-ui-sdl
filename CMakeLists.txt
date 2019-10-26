@@ -17,7 +17,8 @@ find_package(SDL2_ttf REQUIRED >=2.0.0)
 
 add_subdirectory(fatpup)
 
-add_executable(fatpup-ui board.cpp board.h colors.h fatpup-ui.cpp movepanel.cpp movepanel.h umax4_8.c)
+set(ENGINES engines/engine.cpp engines/engine.h engines/minimax.cpp engines/minimax.h)
+add_executable(fatpup-ui ${ENGINES} board.cpp board.h colors.h fatpup-ui.cpp movepanel.cpp movepanel.h)
 target_include_directories(fatpup-ui PRIVATE ${FATPUP_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
 
 target_link_libraries(fatpup-ui ${FATPUP_LIBRARIES} SDL2::Main SDL2::Image SDL2::TTF)
