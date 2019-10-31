@@ -56,7 +56,7 @@ void Board::ShutdownEngineThread()
     _engine = nullptr;
 }
 
-void Board::SetEngine(Engine* engine)
+void Board::SetEngine(fatpup::Engine* engine)
 {
     ShutdownEngineThread();
     if (engine)
@@ -94,9 +94,9 @@ void Board::EngineThreadFunc()
             break;
 
         _engine->MoveDone(_lastMove);
-        _engine->Start();
+        //_engine->Start();
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        _engine->Stop();
+        //_engine->Stop();
 
         const auto engineMove = _engine->GetBestMove();
         if (!engineMove.isEmpty())

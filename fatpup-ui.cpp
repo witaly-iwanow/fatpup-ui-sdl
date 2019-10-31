@@ -66,7 +66,12 @@ bool InitSDL(SDLContext& ctx)
 
 int main(int argc, char* argv[])
 {
-    Engine* engine = nullptr;
+    fatpup::Engine* engine = fatpup::Engine::Create("minimax");
+    if (!engine)
+    {
+        std::cerr << "Can't create minimax engine, terminating...\n";
+        return -1;
+    }
 
     SDLContext ctx;
     if (InitSDL(ctx))
@@ -75,7 +80,7 @@ int main(int argc, char* argv[])
         fatpup::Position initialPos;
         initialPos.setInitial();
         board.SetPosition(initialPos);
-        engine = Engine::create("minimax", initialPos);
+        engine->SetPosition(initialPos);
         board.SetEngine(engine);
 
         MovePanel movePanel(ctx.renderer, targetWindowHeight,

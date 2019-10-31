@@ -12,7 +12,7 @@
 
 #include "fatpup/position.h"
 
-#include "engines/engine.h"
+#include "fatpup/engine.h"
 
 class MovePanel;
 
@@ -22,7 +22,7 @@ public:
     explicit Board(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool playingWhite = true);
     virtual ~Board();
 
-    void SetEngine(Engine* engine);
+    void SetEngine(fatpup::Engine* engine);
     void SetMovePanel(MovePanel* movePanel);
     void SetPosition(const fatpup::Position& pos);
     void Move(fatpup::Move move);
@@ -56,7 +56,7 @@ private:
 
     fatpup::Move _lastMove;
 
-    Engine* _engine = nullptr;
+    fatpup::Engine* _engine = nullptr;
     std::thread* _engineThread = nullptr;
     std::mutex _engineMutex;
     std::condition_variable _engineCv;
