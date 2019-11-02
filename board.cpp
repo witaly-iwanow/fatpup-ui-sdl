@@ -61,6 +61,7 @@ void Board::SetEngine(fatpup::Engine* engine)
     ShutdownEngineThread();
     if (engine)
     {
+        _shutdown = false;
         _engine = engine;
         _engineThread = new std::thread(&Board::EngineThreadFunc, this);
     }
